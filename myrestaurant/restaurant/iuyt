@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Корзина</h1>
+
+{% if cart.items.all %}
+    <ul>
+        {% for item in cart.items.all %}
+            <li>
+                {{ item.dish.name }} — {{ item.quantity }}
+
+                <form action="{% url 'remove_from_cart' item.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Удалить</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+
+    <p><b>Итого:</b> {{ total_price }} грн</p>
+
+    <a href="{% url 'create_order' %}">Оформить заказ</a>
+
+{% else %}
+    <p style="color: gray;">🛒 Корзина пуста</p>
+    <p>Добавьте блюда, чтобы оформить заказ</p>
+{% endif %}
+
+{% endblock %}  карт штмл
+
+
+
+
+
+
+
+
+
+
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+
+            Cart.objects.create(user=user)
+
+
+            login(request, user)
+
+            return redirect("home")
+    else:
+        form = RegisterForm()
+        return render(request, "register.html", {"form": form})
+
+
+
+
+
+
+
+
+
+
+
+
+
+class CreateOrderView(View):
+    def post(self, request):
+        cart = get_user_cart(request.user)
+
+        if not cart.items.exists():
+            messages.error(request, "Корзина пуста — нельзя оформить заказ")
+            return redirect('cart')
+
+        profile = Profile.objects.get(user=request.user)
+
+        if not profile.address or not profile.phone:
+            messages.error(request, "Заполни профиль")
+            return redirect('profile')
+
+        payment_method = request.POST.get("payment_method")
+
+#        address = request.POST.get("address")
+#        phone = request.POST.get("phone")
+#        payment_method = request.POST.get("payment_method")
+
+        order = Order.objects.create(
+            user=request.user,
+            address=profile.address,
+            phone=profile.phone,
+            payment_method=payment_method,
+            total_price=0
+        )
+
+        total = 0
+
+        for item in cart.items.all():
+            OrderItem.objects.create(
+                order=order,
+                dish=item.dish,
+                quantity=item.quantity,
+                price=item.dish.price
+            )
+            total += item.dish.price * item.quantity
+
+        order.total_price = total
+        order.save()
+
+        cart.items.all().delete()
+        messages.success(request, "✅ Заказ успешно оформлен!")
+
+        return redirect('order_detail', pk=order.id)
+
+    def get(self, request):
+        return render(request, 'create_order.html')
+
