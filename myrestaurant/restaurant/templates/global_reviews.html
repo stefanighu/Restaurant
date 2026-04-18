@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Отзывы</h1>
+
+<form action="{% url 'add_global_review' %}" method="post">
+    {% csrf_token %}
+
+    <input type="number" name="rating" min="1" max="5" required placeholder="Рейтинг">
+    <br>
+
+    <textarea name="comment" placeholder="Ваш отзыв"></textarea>
+    <br>
+
+    <button type="submit">Оставить отзыв</button>
+</form>
+
+<hr>
+
+{% for review in reviews %}
+    <div>
+        <b>{{ review.user.username }}</b>
+        — ⭐ {{ review.rating }}/5
+        <p>{{ review.comment }}</p>
+    </div>
+    <hr>
+{% empty %}
+    <p>Пока нет отзывов</p>
+{% endfor %}
+
+{% endblock %}

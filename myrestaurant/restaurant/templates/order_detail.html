@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Заказ №{{ order.id }}</h1>
+
+<p>Адрес: {{ order.address }}</p>
+<p>Телефон: {{ order.phone }}</p>
+<p>Статус: {{ order.status }}</p>
+
+<form action="{% url 'reorder' order.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Заказать снова</button>
+</form>
+
+<ul>
+    {% for item in order.items.all %}
+        <li>
+            {{ item.dish.name }} — {{ item.quantity }} × {{ item.price }}
+        </li>
+    {% endfor %}
+</ul>
+
+<p><b>Итого:</b> {{ order.total_price }}</p>
+
+{% endblock %}

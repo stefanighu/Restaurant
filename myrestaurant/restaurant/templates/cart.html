@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Корзина</h1>
+
+{% if cart.items.all %}
+    <ul>
+        {% for item in cart.items.all %}
+            <li>
+                {{ item.dish.name }} —
+                {{ item.quantity }} × {{ item.dish.price }} грн
+                = {{ item.get_total_price }} грн
+
+                <form action="{% url 'increase_quantity' item.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">+</button>
+                </form>
+
+                <form action="{% url 'decrease_quantity' item.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">-</button>
+                </form>
+
+                <form action="{% url 'remove_from_cart' item.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Удалить</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p><b>Итого:</b> {{ cart.get_total_price }} грн</p>
+
+    <a href="{% url 'create_order' %}">
+    <button>Оформить заказ</button>
+    </a>
+
+{% else %}
+    <p>Корзина пуста</p>
+{% endif %}
+
+{% endblock %}

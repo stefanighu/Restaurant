@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Профиль</h1>
+
+{% if not edit %}
+
+    <div style="border:1px solid #ccc; padding:15px; width:300px;">
+        <p><b>Username:</b> {{ request.user.username }}</p>
+        <p><b>Email:</b> {{ request.user.email }}</p>
+        <p><b>Телефон:</b> {{ profile.phone|default:"Не указан" }}</p>
+        <p><b>Адрес:</b> {{ profile.address|default:"Не указан" }}</p>
+
+        <a href="?edit=1">
+            <button>Изменить данные</button>
+        </a>
+    </div>
+
+{% else %}
+
+    <form method="post" style="border:1px solid #ccc; padding:15px; width:300px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <a href="{% url 'profile' %}">
+        <button>Отмена</button>
+    </a>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Оформление заказа</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    {% if user.is_authenticated %}
+        <p>Адрес и телефон берутся из профиля</p>
+    {% else %}
+
+
+        <p>Адрес:</p>
+        <input type="text" name="address">
+
+        <p>Телефон:</p>
+        <input type="text" name="phone">
+    {% endif %}
+
+    <p>Оплата:</p>
+    <select name="payment_method">
+        <option value="online">Online</option>
+        <option value="cash">Наличка</option>
+    </select>
+
+    <br><br>
+    <button type="submit">Заказать</button>
+</form>
+
+{% endblock %}

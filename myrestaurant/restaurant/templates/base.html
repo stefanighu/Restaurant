@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+    <style>
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav a {
+    margin-right: 5px;
+    text-decoration: none;
+}
+</style>
+
+    <meta charset="UTF-8">
+    <title>{% block title %}Food App{% endblock %}</title>
+</head>
+<body>
+
+    <nav class="nav">
+        <div class="nav-left">
+            <a href="{% url 'home' %}">Главная</a> |
+            <a href="{% url 'categories' %}">Категории</a> |
+            <a href="{% url 'cart' %}">Корзина</a> |
+            <a href="{% url 'my_orders' %}">Мои заказы</a> |
+            <a href="{% url 'global_reviews' %}">Отзывы</a>|
+            <a href="{% url 'profile' %}">Профиль</a> |
+        </div>
+
+       <div class="nav-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Профиль</a> |
+
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Выйти</button>
+                </form>
+
+            {% else %}
+                <a href="{% url 'register' %}">Регистрация</a> |
+                <a href="{% url 'login' %}">Вход</a>
+            {% endif %}
+       </div>
+    </nav>
+
+
+
+    <hr>
+
+    {% if messages %}
+    {% for message in messages %}
+        <p style="color: green;">
+            {{ message }}
+        </p>
+    {% endfor %}
+{% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

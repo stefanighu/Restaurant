@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Мои заказы</h1>
+
+<ul>
+    {% for order in orders %}
+        <li>
+            <a href="{% url 'order_detail' order.id %}">
+                Заказ №{{ order.id }}
+            </a>
+            — {{ order.status }}
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

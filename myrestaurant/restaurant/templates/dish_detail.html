@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ dish.name }}</h1>
+
+<p>{{ dish.description }}</p>
+<p><b>Ингредиенты:</b> {{ dish.ingredients }}</p>
+<p><b>Цена:</b> {{ dish.price }} грн</p>
+
+{% if dish.media.first %}
+    <img src="{{ dish.media.first.file.url }}" width="300">
+{% endif %}
+
+{% if dish.available %}
+    <p style="color: green;">В наличии</p>
+
+<form action="{% url 'add_to_cart' dish.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Добавить в корзину</button>
+</form>
+
+{% else %}
+    <p style="color: red;">Сейчас недоступно</p>
+{% endif %}
+
+<p>
+    ⭐ Рейтинг:
+    {% if avg_rating %}
+        {{ avg_rating|floatformat:1 }} / 5
+    {% else %}
+        Нет оценок
+    {% endif %}
+</p>
+
+
+<hr>
+
+
+<h2>Отзывы</h2>
+
+{% for review in reviews %}
+    <div>
+        <b>{{ review.user.username }}</b>
+        — ⭐ {{ review.rating }}/5
+        <p>{{ review.comment }}</p>
+    </div>
+    <hr>
+{% empty %}
+    <p>Пока нет отзывов</p>
+{% endfor %}
+
+
+
+<h3>Оставить отзыв</h3>
+
+<form action="{% url 'add_review' dish.id %}" method="post">
+    {% csrf_token %}
+
+    <input type="number" name="rating" min="1" max="5" required placeholder="Рейтинг">
+
+    <br>
+
+    <textarea name="comment" placeholder="Комментарий"></textarea>
+
+    <br>
+
+    <button type="submit">Отправить</button>
+</form>
+
+
+{% endblock %}
